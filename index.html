@@ -1,0 +1,1586 @@
+<!DOCTYPE html>
+<html lang="ms" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi UKKMSET 2</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn { animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 via-slate-50 to-indigo-50 text-slate-800 h-full flex flex-col justify-between selection:bg-blue-600 selection:text-white">
+
+    <!-- Header (Biru Gelap) -->
+    <header class="bg-slate-900 border-b border-slate-800 shadow-lg sticky top-0 z-40 text-white backdrop-blur-md bg-opacity-95">
+        <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-col sm:flex-row justify-between items-center gap-3">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 text-white p-2.5 rounded-xl shadow-inner flex items-center justify-center">
+                    <i class="fa-solid fa-graduation-cap text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-bold tracking-wide flex items-center gap-2">
+                        <span>SIMULASI UKKM</span> 
+                        <span class="bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs px-2 py-0.5 rounded-md uppercase font-semibold">MRSM</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 mt-0.5">Persediaan latihan kemasukan MRSM</p>
+                </div>
+            </div>
+            <div id="stats-header" class="hidden flex items-center gap-3 text-sm bg-slate-800/90 px-4 py-2 rounded-xl border border-slate-700/80 shadow-md text-white">
+                <button onclick="confirmChangeCategory()" class="bg-slate-700 hover:bg-slate-600 text-white text-xs px-2.5 py-1.5 rounded-lg transition font-medium flex items-center gap-1.5 border border-slate-600 shadow-sm cursor-pointer">
+                    <i class="fa-solid fa-bars text-slate-300"></i>
+                    Pilih Kategori
+                </button>
+                <div class="h-4 w-px bg-slate-700"></div>
+                <div id="score-counter-wrap" class="text-xs sm:text-sm font-medium">Skor: <span id="header-score" class="font-bold text-blue-400">0</span></div>
+                <div class="h-4 w-px bg-slate-700"></div>
+                <div class="text-xs sm:text-sm font-medium">Masa: <span id="timer-display" class="font-mono font-bold text-amber-400">30:00</span></div>
+                <div class="h-4 w-px bg-slate-700"></div>
+                <button onclick="confirmSubmitQuiz()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs px-3 py-1.5 rounded-lg transition font-semibold shadow-sm flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-paper-plane"></i> Hantar Ujian
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-grow max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center">
+
+        <!-- Screen 1: Dashboard / Home -->
+        <div id="screen-home" class="bg-white/90 backdrop-blur-sm rounded-3xl border border-slate-200/80 p-6 sm:p-10 shadow-xl text-center max-w-4xl mx-auto w-full animate-fadeIn">
+            <div class="inline-flex p-3.5 bg-blue-50 text-blue-600 rounded-2xl mb-4 border border-blue-100 shadow-sm">
+                <i class="fa-solid fa-book-open text-3xl"></i>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">Simulasi UKKM SET 2</h2>
+            <p class="text-slate-600 max-w-xl mx-auto mb-8 text-sm sm:text-base leading-relaxed">
+                Persediaan komprehensif merangkumi modul akademik serta penilaian personaliti untuk calon MRSM.
+            </p>
+
+            <!-- Utama: Kategori Gabungan (MYMRSM & SPSKT) -->
+            <div class="mb-8">
+                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 text-left flex items-center gap-2">
+                    <i class="fa-solid fa-layer-group text-blue-600"></i> Pilihan Simulasi Penuh Berperingkat
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+                    <button onclick="startQuiz('mymrsm')" class="group relative p-5 bg-gradient-to-br from-blue-50/80 via-white to-blue-50/30 hover:from-blue-100 hover:to-blue-50 rounded-2xl border border-blue-200/80 hover:border-blue-400 transition-all flex flex-col justify-between shadow-sm hover:shadow-md cursor-pointer">
+                        <div>
+                            <div class="inline-block bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Modul ini untuk pelajar yang TIDAK menduduki PKSK</div>
+                            <div class="text-lg font-bold text-slate-900 group-hover:text-blue-700 transition-colors">Calon Sistem MYMRSM</div>
+                            <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">Matematik, Sains, Bahasa Melayu & Keperibadian.</p>
+                        </div>
+                        <div class="mt-5 flex items-center text-xs font-semibold text-blue-600 group-hover:translate-x-1.5 transition-transform">Mula Simulasi MYMRSM &rarr;</div>
+                    </button>
+
+                    <button onclick="startQuiz('spskt')" class="group relative p-5 bg-gradient-to-br from-emerald-50/80 via-white to-emerald-50/30 hover:from-emerald-100 hover:to-emerald-50 rounded-2xl border border-emerald-200/80 hover:border-emerald-400 transition-all flex flex-col justify-between shadow-sm hover:shadow-md cursor-pointer">
+                        <div>
+                            <div class="inline-block bg-emerald-100 text-emerald-700 text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2">Modul ini untuk pelajar yang SUDAH menduduki PKSK</div>
+                            <div class="text-lg font-bold text-slate-900 group-hover:text-emerald-700 transition-colors">Calon Sistem SPSKT</div>
+                            <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">Modul Matematik, Sains & Keperibadian (Tanpa subjek Bahasa Melayu).</p>
+                        </div>
+                        <div class="mt-5 flex items-center text-xs font-semibold text-emerald-600 group-hover:translate-x-1.5 transition-transform">Mula Simulasi SPSKT &rarr;</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bahagian Bawah: Latihan Subjek Individu -->
+            <div>
+                <div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 text-left flex items-center gap-2">
+                    <i class="fa-solid fa-book-open text-slate-600"></i> Latihan Modul Individu
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-left">
+                    <button onclick="startQuiz('matematik')" class="group p-4 bg-slate-50 hover:bg-blue-50/40 rounded-2xl border border-slate-200/80 hover:border-blue-300 transition-all flex flex-col justify-between shadow-sm cursor-pointer">
+                        <div>
+                            <div class="text-[10px] font-bold text-blue-600 uppercase tracking-wider mb-1">Modul Asas</div>
+                            <div class="text-base font-bold text-slate-900 group-hover:text-blue-600 transition-colors">Matematik</div>
+                            <p class="text-xs text-slate-500 mt-1">30 Soalan • 30 Minit</p>
+                        </div>
+                        <div class="mt-4 flex items-center text-xs font-medium text-blue-600 group-hover:translate-x-1 transition-transform">Mula &rarr;</div>
+                    </button>
+
+                    <button onclick="startQuiz('sains')" class="group p-4 bg-slate-50 hover:bg-emerald-50/40 rounded-2xl border border-slate-200/80 hover:border-emerald-300 transition-all flex flex-col justify-between shadow-sm cursor-pointer">
+                        <div>
+                            <div class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider mb-1">Modul Asas</div>
+                            <div class="text-base font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">Sains</div>
+                            <p class="text-xs text-slate-500 mt-1">30 Soalan • 35 Minit</p>
+                        </div>
+                        <div class="mt-4 flex items-center text-xs font-medium text-emerald-600 group-hover:translate-x-1 transition-transform">Mula &rarr;</div>
+                    </button>
+
+                    <button onclick="startQuiz('bm')" class="group p-4 bg-slate-50 hover:bg-amber-50/40 rounded-2xl border border-slate-200/80 hover:border-amber-300 transition-all flex flex-col justify-between shadow-sm cursor-pointer">
+                        <div>
+                            <div class="text-[10px] font-bold text-amber-600 uppercase tracking-wider mb-1">Modul Asas</div>
+                            <div class="text-base font-bold text-slate-900 group-hover:text-amber-600 transition-colors">Bahasa Melayu</div>
+                            <p class="text-xs text-slate-500 mt-1">30 Soalan • 30 Minit</p>
+                        </div>
+                        <div class="mt-4 flex items-center text-xs font-medium text-amber-600 group-hover:translate-x-1 transition-transform">Mula &rarr;</div>
+                    </button>
+
+                    <button onclick="startQuiz('personaliti')" class="group p-4 bg-purple-50/60 hover:bg-purple-50 rounded-2xl border border-purple-200/80 hover:border-purple-300 transition-all flex flex-col justify-between shadow-sm cursor-pointer">
+                        <div>
+                            <div class="text-[10px] font-bold text-purple-600 uppercase tracking-wider mb-1">Modul Sahsiah</div>
+                            <div class="text-base font-bold text-slate-900 group-hover:text-purple-600 transition-colors">Keperibadian</div>
+                            <p class="text-xs text-slate-500 mt-1">80 Pernyataan • 30 Minit</p>
+                        </div>
+                        <div class="mt-4 flex items-center text-xs font-medium text-purple-600 group-hover:translate-x-1 transition-transform">Mula &rarr;</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 2: Quiz Room (Layout dengan Sidebar Navigasi Soalan Kanan) -->
+        <div id="screen-quiz" class="hidden grid grid-cols-1 lg:grid-cols-3 gap-6 items-start w-full animate-fadeIn">
+            <!-- Bahagian Kiri/Utama: Soalan & Pilihan -->
+            <div class="lg:col-span-2 bg-white/95 backdrop-blur-sm rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xl flex flex-col justify-between min-h-[580px]">
+                <div>
+                    <!-- Top Question Meta -->
+                    <div class="flex justify-between items-center mb-6 text-sm">
+                        <div class="flex items-center gap-2">
+                            <span id="category-badge" class="bg-slate-100 text-slate-700 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border border-slate-200/80 shadow-sm">Kategori</span>
+                            <span id="question-progress-label" class="font-bold text-slate-600 text-xs">Soalan 1 dari 30</span>
+                        </div>
+                        <button onclick="toggleBookmark()" id="btn-bookmark" class="text-slate-400 hover:text-amber-500 transition p-1.5 rounded-lg border border-slate-200 bg-slate-50 flex items-center gap-1.5 text-xs font-medium cursor-pointer">
+                            <i class="fa-regular fa-bookmark text-amber-500" id="bookmark-icon"></i>
+                            <span id="bookmark-text">Tanda (Ditanda)</span>
+                        </button>
+                    </div>
+
+                    <!-- Question Text -->
+                    <div id="question-text" class="text-lg sm:text-xl font-semibold text-slate-900 mb-6 leading-relaxed">
+                        <!-- Soalan dimasukkan secara dinamik -->
+                    </div>
+
+                    <!-- Options Grid -->
+                    <div id="options-container" class="space-y-3 mb-6">
+                        <!-- Pilihan jawapan dinamik -->
+                    </div>
+
+                    <!-- Explanation Box -->
+                    <div id="explanation-box" class="hidden p-4.5 rounded-2xl bg-blue-50/90 border border-blue-200 text-sm mb-6 animate-fadeIn shadow-sm">
+                        <div id="explanation-title" class="font-bold mb-1.5 text-blue-900 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-info text-blue-600"></i>
+                            Huraian Fakta:
+                        </div>
+                        <p id="explanation-text" class="text-blue-900/90 leading-relaxed text-xs sm:text-sm"></p>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex justify-between items-center pt-4 border-t border-slate-200/80">
+                    <button id="btn-prev" onclick="prevQuestion()" class="px-4 py-2.5 bg-white hover:bg-slate-100 text-slate-700 text-sm font-semibold rounded-xl transition flex items-center gap-1.5 border border-slate-300 shadow-sm cursor-pointer">
+                        &larr; Sebelumnya
+                    </button>
+                    <button id="btn-next" onclick="nextQuestion()" class="px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition shadow-md hover:shadow-lg flex items-center gap-1.5 cursor-pointer">
+                        Seterusnya &rarr;
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bahagian Kanan: Navigasi Soalan (Grid Panel) -->
+            <div class="bg-white/95 backdrop-blur-sm rounded-3xl border border-slate-200/80 p-5 shadow-xl flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-blue-600"></i> Navigasi Soalan
+                        </h3>
+                        <span id="nav-answered-counter" class="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">0 / 0 Dijawab</span>
+                    </div>
+
+                    <!-- Legend / Petunjuk -->
+                    <div class="grid grid-cols-3 gap-1.5 text-[11px] mb-4 bg-slate-50 p-2.5 rounded-xl border border-slate-200/80 text-slate-600 font-medium text-center">
+                        <div class="flex items-center justify-center gap-1">
+                            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span> Dijawab
+                        </div>
+                        <div class="flex items-center justify-center gap-1">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span> Ditanda
+                        </div>
+                        <div class="flex items-center justify-center gap-1">
+                            <span class="w-2.5 h-2.5 rounded-full bg-slate-200 inline-block"></span> Belum
+                        </div>
+                    </div>
+
+                    <!-- Grid Nombor Soalan -->
+                    <div id="question-grid" class="grid grid-cols-5 gap-2 max-h-[360px] overflow-y-auto p-1">
+                        <!-- Dijana secara dinamik -->
+                    </div>
+                </div>
+
+                <div class="pt-4 mt-4 border-t border-slate-200/80">
+                    <button onclick="confirmSubmitQuiz()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 px-4 rounded-xl transition shadow-md hover:shadow-lg text-sm flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-paper-plane"></i> Hantar Jawapan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Screen 3: Results -->
+        <div id="screen-result" class="hidden bg-white/95 backdrop-blur-sm rounded-3xl border border-slate-200/80 p-6 sm:p-10 shadow-xl text-center max-w-4xl mx-auto w-full animate-fadeIn">
+            <div class="inline-flex p-4 bg-emerald-100 text-emerald-600 rounded-3xl mb-4 border border-emerald-200 shadow-sm">
+                <i class="fa-solid fa-circle-check text-3xl"></i>
+            </div>
+            <h2 id="result-title" class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-2">Keputusan Simulasi UKKM</h2>
+            <p id="result-subtitle" class="text-slate-600 text-sm sm:text-base max-w-xl mx-auto mb-8 leading-relaxed">Tahniah kerana telah melengkapkan latihan ini dengan jayanya!</p>
+
+            <div id="result-stats-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-xl mx-auto mb-8">
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+                    <div class="text-xs font-medium text-slate-500 mb-1">Markah</div>
+                    <div id="res-score" class="text-2xl font-extrabold text-blue-600">0/30</div>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+                    <div class="text-xs font-medium text-slate-500 mb-1">Peratusan</div>
+                    <div id="res-percentage" class="text-2xl font-extrabold text-emerald-600">0%</div>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+                    <div class="text-xs font-medium text-slate-500 mb-1">Betul</div>
+                    <div id="res-correct" class="text-2xl font-extrabold text-green-600">0</div>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+                    <div class="text-xs font-medium text-slate-500 mb-1">Salah</div>
+                    <div id="res-incorrect" class="text-2xl font-extrabold text-rose-600">0</div>
+                </div>
+            </div>
+
+            <div id="big-five-results-container" class="hidden space-y-4 text-left max-w-2xl mx-auto mb-8">
+                <!-- Dijana secara dinamik mengikut skala OCEAN -->
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-3 max-w-xs mx-auto">
+                <button onclick="resetApp()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 px-6 rounded-xl transition shadow-lg hover:shadow-xl text-sm cursor-pointer">
+                    Cuba Lagi / Pilih Kategori
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Custom Modal for Confirmation -->
+    <div id="confirm-modal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-md z-50 flex items-center justify-center p-4">
+        <div class="bg-white border border-slate-200 rounded-3xl p-6 max-w-sm w-full text-center shadow-2xl animate-fadeIn">
+            <div class="inline-flex p-3 bg-amber-50 text-amber-600 rounded-2xl mb-3 border border-amber-200">
+                <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+            </div>
+            <h3 id="modal-title" class="text-lg font-bold text-slate-900 mb-2">Kembali ke Pemilihan Kategori?</h3>
+            <p id="modal-desc" class="text-slate-600 text-sm mb-6 leading-relaxed">Kuiz semasa anda akan ditamatkan dan kemajuan akan diset semula.</p>
+            <div class="flex gap-3">
+                <button onclick="closeConfirmModal()" class="flex-1 bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 py-2.5 rounded-xl text-sm font-semibold transition shadow-sm cursor-pointer">Batal</button>
+                <button id="modal-btn-confirm" onclick="executeConfirmAction()" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white py-2.5 rounded-xl text-sm font-semibold transition shadow-md cursor-pointer">Ya, Keluar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-4 text-center text-white">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col items-center justify-center gap-1">
+            <a href="https://online.education1.my" target="_blank" rel="noopener noreferrer" class="bg-slate-800/80 hover:bg-slate-700 border border-slate-700 px-4 py-1.5 rounded-full text-xs font-semibold text-emerald-400 flex items-center gap-2 transition-all shadow-sm">
+                <i class="fa-solid fa-graduation-cap text-emerald-400"></i>
+                <span>online.education1.my</span>
+            </a>
+        </div>
+    </footer>
+
+    <!-- Script Logik Kuiz & Aplikasi -->
+    <script>
+        // Data Soalan Matematik
+        const matematik = [
+          {
+            q: "Cari nombor positif terkecil yang memberikan baki 2 apabila dibahagi dengan 3, baki 3 apabila dibahagi dengan 4, dan baki 4 apabila dibahagi dengan 5.",
+            options: ["29", "39", "59", "79"],
+            answer: 2,
+            explanation: "59 ÷ 3 memberikan baki 2, 59 ÷ 4 memberikan baki 3 dan 59 ÷ 5 memberikan baki 4. Nombor itu boleh ditulis sebagai 60 − 1. Oleh sebab gandaan sepunya terkecil 3, 4 dan 5 ialah 60, 59 ialah nombor positif terkecil yang memenuhi semua syarat."
+          },
+          {
+            q: "Lima kali suatu nombor ditolak 9 menghasilkan 46. Apakah nombor itu?",
+            options: ["9", "10", "11", "12"],
+            answer: 2,
+            explanation: "Jika nombor itu ialah x, maka 5x − 9 = 46. Oleh itu, 5x = 55 dan x = 11."
+          },
+          {
+            q: "Jumlah tiga nombor ganjil berturutan ialah 75. Apakah nombor yang terbesar?",
+            options: ["23", "25", "27", "29"],
+            answer: 2,
+            explanation: "Tiga nombor ganjil berturutan boleh ditulis sebagai 23, 25 dan 27. Jumlahnya ialah 75, maka nombor terbesar ialah 27."
+          },
+          {
+            q: "Dalam sebuah kelas terdapat 24 orang murid. Seramai 15 orang menyertai Kelab Catur, 12 orang menyertai Kelab Badminton dan 5 orang tidak menyertai kedua-dua kelab. Berapa orang menyertai kedua-dua kelab?",
+            options: ["6", "7", "8", "9"],
+            answer: 2,
+            explanation: "Seramai 24 − 5 = 19 orang menyertai sekurang-kurangnya satu kelab. Jumlah penyertaan dua kelab ialah 15 + 12 = 27. Oleh itu, 27 − 19 = 8 orang menyertai kedua-dua kelab."
+          },
+          {
+            q: "Seseorang hendak bergerak dari satu sudut taman ke sudut bertentangan. Dia mesti bergerak tepat 3 langkah ke timur dan 2 langkah ke utara. Jika setiap langkah mengikut arah tersebut, berapa laluan terpendek yang berbeza boleh diambil?",
+            options: ["5", "6", "10", "12"],
+            answer: 2,
+            explanation: "Setiap laluan terdiri daripada 5 langkah: 3 ke timur dan 2 ke utara. Kedudukan dua langkah ke utara boleh dipilih daripada lima kedudukan, iaitu 5 × 4 ÷ 2 = 10 susunan."
+          },
+          {
+            q: "Sebuah segi tiga mempunyai dua sudut dalam masing-masing 38° dan 67°. Berapakah sudut luar yang bersebelahan dengan sudut dalam ketiga-tiga itu?",
+            options: ["95°", "105°", "113°", "125°"],
+            answer: 1,
+            explanation: "Sudut luar segi tiga bersamaan jumlah dua sudut dalam yang tidak bersebelahan dengannya. Maka 38° + 67° = 105°."
+          },
+          {
+            q: "Tiga buah segi empat sama yang sama saiz, masing-masing bersisi 5 cm, disusun dalam satu barisan dengan sisi bersebelahan bercantum sepenuhnya. Berapakah perimeter bentuk keseluruhan?",
+            options: ["30 cm", "35 cm", "40 cm", "45 cm"],
+            answer: 2,
+            explanation: "Bentuk keseluruhan ialah segi empat tepat dengan panjang 3 × 5 = 15 cm dan lebar 5 cm. Perimeter = 2 × (15 + 5) = 40 cm."
+          },
+          {
+            q: "Sebuah kuboid mempunyai panjang 10 cm, lebar 6 cm dan isipadu 360 cm³. Berapakah tingginya?",
+            options: ["4 cm", "5 cm", "6 cm", "8 cm"],
+            answer: 2,
+            explanation: "Isipadu kuboid = panjang × lebar × tinggi. Tinggi = 360 ÷ (10 × 6) = 6 cm."
+          },
+          {
+            q: "Berapakah bilangan faktor positif bagi nombor 36?",
+            options: ["7", "8", "9", "10"],
+            answer: 2,
+            explanation: "Faktor positif 36 ialah 1, 2, 3, 4, 6, 9, 12, 18 dan 36. Jumlahnya ialah 9 faktor."
+          },
+          {
+            q: "Jika 1 Julai jatuh pada hari Rabu, pada hari apakah 25 Julai pada tahun yang sama?",
+            options: ["Khamis", "Jumaat", "Sabtu", "Ahad"],
+            answer: 2,
+            explanation: "25 Julai ialah 24 hari selepas 1 Julai. 24 ÷ 7 memberikan baki 3, jadi hari itu ialah tiga hari selepas Rabu, iaitu Sabtu."
+          },
+          {
+            q: "Sebuah nombor tiga digit mempunyai digit ratus 4. Digit puluhnya dua kali digit sa, dan jumlah semua digitnya ialah 13. Apakah nombor itu?",
+            options: ["436", "463", "634", "643"],
+            answer: 1,
+            explanation: "Jumlah digit puluh dan digit sa ialah 13 − 4 = 9. Jika digit sa ialah 3, digit puluh ialah 6. Maka nombornya ialah 463."
+          },
+          {
+            q: "Antara nombor 41 hingga 50, nombor yang manakah mempunyai tepat tiga faktor positif?",
+            options: ["43", "45", "49", "50"],
+            answer: 2,
+            explanation: "49 = 7² dan mempunyai tepat tiga faktor positif, iaitu 1, 7 dan 49."
+          },
+          {
+            q: "Seseorang hendak membayar RM4.50 menggunakan tepat 6 keping wang yang terdiri daripada syiling RM1 dan 50 sen sahaja. Berapakah bilangan syiling RM1 yang diperlukan?",
+            options: ["2", "3", "4", "5"],
+            answer: 1,
+            explanation: "Jika terdapat 3 syiling RM1 dan 3 syiling 50 sen, jumlahnya ialah RM3 + RM1.50 = RM4.50 dengan tepat 6 syiling."
+          },
+          {
+            q: "x dan y ialah nombor bulat positif. Jika x + y = 10 dan x lebih besar daripada y, berapakah bilangan pasangan (x, y) yang mungkin?",
+            options: ["3", "4", "5", "9"],
+            answer: 1,
+            explanation: "Pasangan yang memenuhi syarat ialah (6,4), (7,3), (8,2) dan (9,1). Oleh itu, terdapat 4 pasangan."
+          },
+          {
+            q: "Dua biji dadu adil dilambungkan serentak. Apakah kebarangkalian jumlah mata yang diperoleh ialah 8?",
+            options: ["1/9", "1/6", "5/36", "1/4"],
+            answer: 2,
+            explanation: "Lima pasangan bertertib menghasilkan jumlah 8: (2,6), (3,5), (4,4), (5,3) dan (6,2). Daripada 36 hasil yang sama kemungkinan, kebarangkaliannya ialah 5/36."
+          },
+          {
+            q: "Dua kad berbeza dipilih daripada lima kad bernombor 1, 2, 3, 4 dan 5. Berapa banyak pasangan yang hasil darab nombornya ialah nombor genap?",
+            options: ["5", "6", "7", "8"],
+            answer: 2,
+            explanation: "Terdapat 10 pasangan dua kad yang mungkin. Hasil darab hanya ganjil jika kedua-dua nombor ganjil. Tiga pasangan yang menghasilkan hasil darab ganjil ialah (1,3), (1,5) dan (3,5). Maka 10 − 3 = 7 pasangan menghasilkan hasil darab genap."
+          },
+          {
+            q: "Aina berada di tempat kelima dari hadapan dan ketujuh dari belakang dalam satu barisan. Berapakah jumlah orang dalam barisan itu?",
+            options: ["10", "11", "12", "13"],
+            answer: 1,
+            explanation: "Aina dikira dalam kedua-dua kedudukan. Jumlah orang = 5 + 7 − 1 = 11."
+          },
+          {
+            q: "Dua sudut pada satu garis lurus masing-masing ialah (2x + 30)° dan (x + 60)°. Berapakah nilai x?",
+            options: ["20", "25", "30", "35"],
+            answer: 2,
+            explanation: "Jumlah sudut pada garis lurus ialah 180°. Maka (2x + 30) + (x + 60) = 180. Jadi 3x = 90 dan x = 30."
+          },
+          {
+            q: "Hasil darab dua nombor bulat positif berturutan ialah 156. Berapakah jumlah kedua-dua nombor itu?",
+            options: ["23", "24", "25", "26"],
+            answer: 2,
+            explanation: "12 × 13 = 156. Kedua-dua nombor itu ialah 12 dan 13, maka jumlahnya ialah 25."
+          },
+          {
+            q: "Apakah nombor terkecil yang perlu ditambah kepada 438 supaya jumlahnya boleh dibahagi tepat dengan 9?",
+            options: ["1", "2", "3", "6"],
+            answer: 2,
+            explanation: "438 mempunyai baki 6 apabila dibahagi dengan 9. Nombor gandaan 9 seterusnya ialah 441, jadi 441 − 438 = 3."
+          },
+          {
+            q: "Berapakah bilangan diagonal dalam sebuah pentagon?",
+            options: ["4", "5", "6", "7"],
+            answer: 1,
+            explanation: "Setiap bucu pentagon boleh disambungkan kepada 2 bucu bukan bersebelahan. Formula bilangan diagonal ialah n(n − 3) ÷ 2. Untuk n = 5, hasilnya ialah 5."
+          },
+          {
+            q: "Sebuah kubus mempunyai kesemua enam permukaan dicat. Kubus itu dipotong menjadi 27 kubus kecil yang sama saiz. Berapakah bilangan kubus kecil yang mempunyai tepat dua permukaan dicat?",
+            options: ["6", "8", "12", "18"],
+            answer: 2,
+            explanation: "Kubus kecil yang mempunyai tepat dua permukaan dicat berada di tengah-tengah setiap rusuk, bukan pada bucu. Terdapat 12 rusuk, dengan satu kubus kecil di tengah setiap rusuk. Jadi jumlahnya 12."
+          },
+          {
+            q: "Apakah gandaan sepunya terkecil bagi 6 dan 8 yang lebih besar daripada 100?",
+            options: ["108", "112", "120", "144"],
+            answer: 2,
+            explanation: "Gandaan sepunya terkecil 6 dan 8 ialah 24. Gandaan 24 yang melebihi 100 dan paling kecil ialah 120."
+          },
+          {
+            q: "Satu diagonal membahagikan sebuah segi empat tepat kepada dua segi tiga yang sama luas. Jika luas satu segi tiga ialah 24 cm², berapakah luas segi empat tepat itu?",
+            options: ["36 cm²", "42 cm²", "48 cm²", "54 cm²"],
+            answer: 2,
+            explanation: "Kedua-dua segi tiga mempunyai luas yang sama. Luas segi empat tepat = 24 + 24 = 48 cm²."
+          },
+          {
+            q: "Sebuah bekas mengandungi 2.4 liter air. Jika setiap botol diisi dengan 300 mL air, berapa botol penuh boleh diisi?",
+            options: ["6", "7", "8", "9"],
+            answer: 2,
+            explanation: "2.4 liter = 2,400 mL. Bilangan botol = 2,400 ÷ 300 = 8."
+          },
+          {
+            q: "Dalam satu permainan, jawapan betul mendapat 4 mata dan jawapan salah kehilangan 1 mata. Seorang murid menjawab kesemua 15 soalan dan memperoleh 40 mata. Berapakah bilangan jawapan betulnya?",
+            options: ["9", "10", "11", "12"],
+            answer: 2,
+            explanation: "Jika x jawapan betul, jawapan salah ialah 15 − x. Markah: 4x − (15 − x) = 40. Maka 5x = 55 dan x = 11."
+          },
+          {
+            q: "Berapakah jumlah semua nombor ganjil positif dari 1 hingga 19?",
+            options: ["90", "95", "100", "110"],
+            answer: 2,
+            explanation: "Terdapat 10 nombor ganjil: 1, 3, 5, ..., 19. Pasangkan nombor dari hujung: 1 + 19 = 20, 3 + 17 = 20, dan terdapat 5 pasangan. Jumlah = 5 × 20 = 100."
+          },
+          {
+            q: "Dalam sebuah segi tiga, dua sisinya berukuran 5 cm dan 7 cm. Panjang sisi ketiga ialah nombor bulat positif. Berapa nilai panjang sisi ketiga yang mungkin?",
+            options: ["7", "8", "9", "10"],
+            answer: 2,
+            explanation: "Bagi segi tiga, panjang sisi ketiga mesti lebih besar daripada 7 − 5 = 2 dan lebih kecil daripada 7 + 5 = 12. Nilai bulat yang mungkin ialah 3 hingga 11, berjumlah 9 nilai."
+          },
+          {
+            q: "Sebuah penanda permainan bermula pada kedudukan 1. Pada setiap giliran, penanda boleh bergerak sama ada 2 atau 5 unit ke hadapan. Berapakah bilangan minimum giliran untuk tiba tepat pada kedudukan 12?",
+            options: ["3", "4", "5", "6"],
+            answer: 1,
+            explanation: "Pergerakan yang diperlukan ialah 12 − 1 = 11 unit. 11 boleh diperoleh dengan 5 + 2 + 2 + 2, iaitu empat giliran. Tiga giliran tidak mencukupi untuk menghasilkan jumlah 11 menggunakan hanya 2 dan 5."
+          },
+          {
+            q: "Sebuah perpustakaan menyusun 48 buah kerusi dalam barisan yang sama panjang. Setiap barisan mesti mempunyai bilangan kerusi yang sama dan sekurang-kurangnya 4 tetapi tidak melebihi 10 kerusi. Berapakah bilangan kerusi yang boleh diletakkan dalam setiap barisan jika bilangan barisan paling sedikit diperlukan?",
+            options: ["4", "6", "8", "10"],
+            answer: 2,
+            explanation: "Bilangan kerusi setiap barisan mestilah faktor 48 antara 4 hingga 10. Pilihan yang memenuhi syarat ialah 4, 6 dan 8. Untuk mendapat bilangan barisan paling sedikit, pilih 8 kerusi setiap barisan, menghasilkan 48 ÷ 8 = 6 barisan."
+          }
+        ];
+
+        // Data Soalan Sains
+        const sains = [
+          {
+            q: "Satu beg plastik jernih diikat pada dahan tumbuhan berdaun. Selepas beberapa jam, titisan air kelihatan pada bahagian dalam beg. Apakah proses tumbuhan yang paling berkaitan dengan pemerhatian itu?",
+            options: ["Fotosintesis", "Transpirasi", "Respirasi", "Pendebungaan"],
+            answer: 1,
+            explanation: "Transpirasi ialah kehilangan wap air daripada bahagian tumbuhan, terutamanya melalui daun. Wap air boleh terkondensasi menjadi titisan pada beg plastik."
+          },
+          {
+            q: "Seorang murid ingin menguji kesan cahaya terhadap pertumbuhan anak pokok. Apakah cara paling adil untuk menjalankan ujian itu?",
+            options: [
+              "Menggunakan tumbuhan berlainan jenis dan menyiramnya secara berbeza",
+              "Menggunakan anak pokok yang sama jenis dan menyamakan air serta tanah, tetapi mengubah pendedahan kepada cahaya",
+              "Meletakkan satu pokok di tempat terang dan satu lagi tanpa air",
+              "Menggunakan saiz pasu berlainan dan tempoh pemerhatian berlainan"
+            ],
+            answer: 1,
+            explanation: "Ujian yang adil mengubah satu faktor sahaja, iaitu pendedahan kepada cahaya. Faktor lain seperti jenis tumbuhan, tanah, air dan tempoh pemerhatian perlu dikekalkan sama."
+          },
+          {
+            q: "Apakah fungsi utama rerambut akar pada tumbuhan?",
+            options: [
+              "Menghasilkan biji benih",
+              "Menyerap air dan garam mineral daripada tanah",
+              "Menarik serangga untuk pendebungaan",
+              "Mengangkut makanan ke dalam daun sahaja"
+            ],
+            answer: 1,
+            explanation: "Rerambut akar meningkatkan luas permukaan akar untuk menyerap air dan garam mineral daripada tanah."
+          },
+          {
+            q: "Dalam rantai makanan rumput → belalang → katak → ular, apakah kesan yang paling mungkin berlaku pada awalnya jika bilangan katak berkurang dengan banyak?",
+            options: [
+              "Bilangan belalang cenderung meningkat",
+              "Bilangan rumput terus meningkat kerana tiada pemangsa",
+              "Bilangan ular pasti menjadi sifar serta-merta",
+              "Belalang berhenti memakan rumput"
+            ],
+            answer: 0,
+            explanation: "Katak memakan belalang. Apabila bilangan katak berkurang, tekanan pemangsaan terhadap belalang menurun dan bilangan belalang boleh meningkat. Perubahan ini seterusnya boleh mempengaruhi tumbuhan."
+          },
+          {
+            q: "Bahagian sistem pencernaan manusia yang menyerap kebanyakan nutrien daripada makanan tercerna ialah...",
+            options: ["Mulut", "Esofagus", "Usus kecil", "Usus besar"],
+            answer: 2,
+            explanation: "Usus kecil mempunyai permukaan yang luas untuk menyerap kebanyakan nutrien hasil pencernaan ke dalam darah."
+          },
+          {
+            q: "Apakah fungsi utama sel darah merah?",
+            options: [
+              "Menghasilkan hormon pertumbuhan",
+              "Mengangkut oksigen ke seluruh badan",
+              "Mencerna makanan dalam perut",
+              "Menghasilkan hempedu"
+            ],
+            answer: 1,
+            explanation: "Sel darah merah mengandungi hemoglobin yang membantu membawa oksigen dari paru-paru ke tisu badan."
+          },
+          {
+            q: "Seorang murid tersentuh permukaan yang terlalu panas lalu menarik tangannya dengan cepat sebelum sempat berfikir. Apakah yang menerangkan tindak balas ini?",
+            options: [
+              "Tindak balas refleks yang diselaraskan dengan cepat melalui saraf tunjang",
+              "Pencernaan makanan yang berlaku dalam usus kecil",
+              "Penghasilan sel darah merah di paru-paru",
+              "Fotosintesis yang berlaku pada kulit"
+            ],
+            answer: 0,
+            explanation: "Menarik tangan daripada permukaan panas ialah tindak balas refleks yang pantas dan automatik. Dalam refleks penarikan tangan, saraf tunjang menyelaraskan gerak balas sebelum pemprosesan sedar menghasilkan tindak balas yang disedari."
+          },
+          {
+            q: "Mengapakah doh roti boleh mengembang apabila yis dicampurkan dan doh dibiarkan sesuai untuk penapaian?",
+            options: [
+              "Yis menghasilkan gas karbon dioksida",
+              "Yis menyerap semua oksigen lalu menghasilkan air",
+              "Yis menukar doh menjadi logam",
+              "Yis menghasilkan cahaya yang memanaskan doh"
+            ],
+            answer: 0,
+            explanation: "Semasa penapaian, yis menghasilkan gas karbon dioksida. Gas yang terperangkap dalam doh menyebabkan doh mengembang."
+          },
+          {
+            q: "Titisan air terbentuk di bahagian luar gelas yang mengandungi air sejuk. Dari manakah kebanyakan titisan itu berasal?",
+            options: [
+              "Air menembusi kaca yang kukuh",
+              "Air di dalam gelas meresap keluar melalui udara",
+              "Wap air di udara menyejuk dan terkondensasi pada permukaan gelas",
+              "Gelas menghasilkan air apabila menjadi sejuk"
+            ],
+            answer: 2,
+            explanation: "Wap air di udara kehilangan haba apabila bersentuhan dengan permukaan gelas sejuk lalu terkondensasi menjadi titisan air."
+          },
+          {
+            q: "Air garam dituang melalui kertas turas biasa. Apakah yang berlaku?",
+            options: [
+              "Garam akan tertinggal sepenuhnya pada kertas turas",
+              "Garam terlarut akan melalui kertas turas bersama air",
+              "Air akan bertukar menjadi minyak",
+              "Garam akan bertukar menjadi gas serta-merta"
+            ],
+            answer: 1,
+            explanation: "Kertas turas memisahkan zarah pepejal tidak larut yang cukup besar. Garam terlarut melalui turasan bersama air."
+          },
+          {
+            q: "Dua mentol dipasang dalam litar selari dengan sumber kuasa yang sesuai. Jika satu mentol rosak dan terputus, apakah yang biasanya berlaku pada mentol satu lagi?",
+            options: [
+              "Mentol satu lagi masih boleh menyala",
+              "Kedua-dua mentol pasti padam",
+              "Sumber kuasa bertukar menjadi magnet",
+              "Mentol yang rosak akan menyala lebih terang"
+            ],
+            answer: 0,
+            explanation: "Dalam litar selari, setiap cabang mempunyai laluan sendiri. Jika satu cabang terputus, arus masih boleh mengalir pada cabang yang satu lagi."
+          },
+          {
+            q: "Panel solar pada bumbung rumah mengubah tenaga cahaya matahari kepada tenaga...",
+            options: [
+              "Bunyi",
+              "Elektrik",
+              "Kimia dalam makanan",
+              "Nuklear"
+            ],
+            answer: 1,
+            explanation: "Panel solar fotovoltaik menukarkan tenaga cahaya kepada tenaga elektrik."
+          },
+          {
+            q: "Mengapakah tapak kasut sukan biasanya mempunyai corak alur?",
+            options: [
+              "Untuk mengurangkan berat badan pemakai",
+              "Untuk meningkatkan cengkaman dan mengurangkan risiko tergelincir",
+              "Untuk menjadikan kasut mengeluarkan cahaya",
+              "Untuk menghapuskan daya graviti"
+            ],
+            answer: 1,
+            explanation: "Corak alur membantu meningkatkan cengkaman antara tapak kasut dengan permukaan, lalu membantu mengurangkan risiko tergelincir."
+          },
+          {
+            q: "Objek manakah yang paling jelas akan ditarik oleh magnet biasa?",
+            options: ["Pembaris kayu", "Klip kertas keluli", "Pemadam getah", "Sudip plastik"],
+            answer: 1,
+            explanation: "Keluli mengandungi besi dan boleh ditarik oleh magnet. Kayu, getah dan plastik tidak menunjukkan tarikan magnet seperti itu."
+          },
+          {
+            q: "Apabila frekuensi getaran sumber bunyi meningkat, apakah perubahan yang biasanya didengar?",
+            options: [
+              "Bunyi menjadi lebih tinggi picnya",
+              "Bunyi mesti menjadi lebih perlahan",
+              "Bunyi tidak boleh bergerak melalui udara",
+              "Bunyi bertukar menjadi cahaya"
+            ],
+            answer: 0,
+            explanation: "Frekuensi yang lebih tinggi menghasilkan pic bunyi yang lebih tinggi. Kekuatan bunyi pula berkaitan dengan gelombang."
+          },
+          {
+            q: "Sebuah periskop ringkas menggunakan dua cermin satah. Apakah peranan utama cermin-cermin itu?",
+            options: [
+              "Menyerap semua cahaya yang masuk",
+              "Memantulkan cahaya supaya objek di luar garis pandangan dapat dilihat",
+              "Menukarkan cahaya kepada bunyi",
+              "Menghalang cahaya daripada bergerak"
+            ],
+            answer: 1,
+            explanation: "Cermin satah memantulkan cahaya. Susunan cermin dalam periskop mengubah arah cahaya supaya pemerhati dapat melihat objek yang tidak berada pada garis pandangan langsung."
+          },
+          {
+            q: "Apakah punca utama kejadian siang dan malam di Bumi?",
+            options: [
+              "Bumi berputar pada paksinya",
+              "Bulan berputar mengelilingi Bumi",
+              "Matahari mengelilingi Bumi setiap hari",
+              "Bumi berhenti berputar setiap malam"
+            ],
+            answer: 0,
+            explanation: "Bumi berputar pada paksinya. Bahagian yang menghadap Matahari mengalami siang manakala bahagian yang membelakangi Matahari mengalami malam."
+          },
+          {
+            q: "Mengapakah Bulan kelihatan bercahaya pada waktu malam?",
+            options: [
+              "Bulan menghasilkan cahaya sendiri seperti Matahari",
+              "Bulan memantulkan cahaya Matahari",
+              "Bulan mengandungi api yang sentiasa menyala",
+              "Bulan menyerap cahaya Bumi lalu menghasilkan cahaya baharu"
+            ],
+            answer: 1,
+            explanation: "Bulan tidak menghasilkan cahaya tampak sendiri seperti Matahari. Kita melihat cahaya Matahari yang dipantulkan oleh permukaan Bulan."
+          },
+          {
+            q: "Antara keadaan berikut, yang manakah biasanya menyebabkan air menyejat paling cepat?",
+            options: [
+              "Air dalam bekas lebar di tempat panas dan berangin",
+              "Air dalam bekas tertutup di tempat sejuk",
+              "Air dalam bekas sempit di tempat sejuk tanpa angin",
+              "Ais di dalam bekas tertutup"
+            ],
+            answer: 0,
+            explanation: "Suhu yang lebih tinggi, pergerakan udara dan luas permukaan terdedah boleh meningkatkan kadar penyejatan."
+          },
+          {
+            q: "Paku besi lebih mudah berkarat apabila terdedah kepada keadaan yang sesuai. Kaedah manakah paling membantu mengurangkan pengaratan?",
+            options: [
+              "Menyapu lapisan minyak pada permukaan paku",
+              "Membiarkan paku sentiasa basah",
+              "Meletakkan paku dalam air masin",
+              "Menggaru permukaan paku sehingga terdedah"
+            ],
+            answer: 0,
+            explanation: "Lapisan minyak membantu menghalang air dan oksigen daripada bersentuhan terus dengan permukaan besi."
+          },
+          {
+            q: "Apakah ciri batang kaktus yang membantu tumbuhan itu hidup di kawasan yang sangat kering?",
+            options: [
+              "Batang tebal yang menyimpan air",
+              "Daun nipis yang kehilangan air dengan cepat",
+              "Akar yang tidak menyerap air",
+              "Bunga yang tidak memerlukan cahaya"
+            ],
+            answer: 0,
+            explanation: "Batang kaktus yang tebal dan berisi membantu menyimpan air bagi digunakan ketika keadaan kering."
+          },
+          {
+            q: "Mengapakah sesetengah serangga mempunyai warna badan yang hampir sama dengan daun atau kulit pokok?",
+            options: [
+              "Untuk membantu penyamaran daripada pemangsa atau ketika memburu",
+              "Untuk membolehkan mereka menghasilkan air",
+              "Untuk memastikan semua serangga mempunyai suhu yang sama",
+              "Untuk mengelakkan keperluan mendapatkan makanan"
+            ],
+            answer: 0,
+            explanation: "Penyamaran membantu organisma menyembunyikan diri daripada pemangsa atau menghampiri mangsa tanpa mudah dikesan."
+          },
+          {
+            q: "Apakah fungsi utama takal tetap yang dipasang dengan betul untuk mengangkat beban?",
+            options: [
+              "Menukar arah daya yang dikenakan",
+              "Menghapuskan berat beban",
+              "Menghasilkan tenaga tanpa input",
+              "Menjadikan beban tidak mempunyai jisim"
+            ],
+            answer: 0,
+            explanation: "Takal tetap terutamanya menukar arah daya. Takal tetap yang ideal tidak mengurangkan magnitud daya hanya melalui perubahan arah itu."
+          },
+          {
+            q: "Burung yang memakan nektar daripada bunga tertentu mempunyai paruh panjang dan sempit. Apakah kelebihan bentuk paruh itu?",
+            options: [
+              "Memudahkan burung mencapai nektar di bahagian dalam bunga",
+              "Membolehkan burung hidup tanpa air",
+              "Menghalang burung daripada hinggap pada dahan",
+              "Menghasilkan makanan melalui fotosintesis"
+            ],
+            answer: 0,
+            explanation: "Paruh yang panjang dan sempit sesuai untuk mencapai nektar yang terletak di dalam bunga."
+          },
+          {
+            q: "Gelombang bunyi memerlukan medium untuk merambat. Apakah keadaan yang menghalang bunyi biasa daripada merambat?",
+            options: [
+              "Udara",
+              "Air",
+              "Logam",
+              "Vakum"
+            ],
+            answer: 3,
+            explanation: "Bunyi ialah gelombang mekanik yang memerlukan medium seperti udara, air atau pepejal untuk merambat. Vakum ideal tidak mempunyai zarah medium, maka bunyi tidak dapat merambat melaluinya."
+          },
+          {
+            q: "Gas manakah membentuk bahagian terbesar udara kering di atmosfera Bumi?",
+            options: ["Oksigen", "Nitrogen", "Karbon dioksida", "Hidrogen"],
+            answer: 1,
+            explanation: "Nitrogen membentuk kira-kira 78% udara kering di atmosfera Bumi."
+          },
+          {
+            q: "Jika bilangan lebah pendebunga menurun dengan ketara di suatu kebun, apakah kesan yang mungkin berlaku kepada tanaman yang bergantung pada pendebungaan oleh lebah?",
+            options: [
+              "Penghasilan buah dan biji mungkin berkurang",
+              "Semua tumbuhan pasti tumbuh dua kali lebih cepat",
+              "Tumbuhan tidak lagi memerlukan air",
+              "Akar tumbuhan akan berhenti menyerap mineral serta-merta"
+            ],
+            answer: 0,
+            explanation: "Lebah membantu memindahkan debunga antara bunga. Jika pendebungaan berkurang, pembentukan buah dan biji bagi tanaman yang bergantung pada lebah boleh menurun."
+          },
+          {
+            q: "Ketulan ais mencair menjadi air lalu dibekukan semula. Mengapakah proses ini dianggap perubahan fizikal?",
+            options: [
+              "Bahan itu kekal sebagai air, hanya keadaan jirimnya berubah",
+              "Air bertukar menjadi unsur kimia yang lain",
+              "Semua molekul air musnah",
+              "Pembekuan menghasilkan logam"
+            ],
+            answer: 0,
+            explanation: "Pencairan dan pembekuan ialah perubahan keadaan jirim. Bahan itu kekal sebagai air dan perubahan ini boleh diterbalikkan."
+          },
+          {
+            q: "Apakah fungsi penting lapisan ozon di atmosfera?",
+            options: [
+              "Menghalang semua cahaya Matahari sampai ke Bumi",
+              "Menyerap sebahagian besar sinaran ultraungu berbahaya daripada Matahari",
+              "Menghasilkan semua oksigen yang digunakan manusia",
+              "Menghentikan pergerakan angin sepenuhnya"
+            ],
+            answer: 1,
+            explanation: "Lapisan ozon menyerap sebahagian besar sinaran ultraungu daripada Matahari yang boleh memudaratkan hidupan."
+          },
+          {
+            q: "Dalam rawatan air untuk bekalan awam, mengapakah proses pembasmian kuman dilakukan selepas zarah kotoran dikurangkan?",
+            options: [
+              "Untuk membunuh atau menyahaktifkan banyak mikroorganisma penyebab penyakit",
+              "Untuk menambahkan pasir ke dalam air",
+              "Untuk menukarkan air kepada minyak",
+              "Untuk menjadikan air lebih berat daripada batu"
+            ],
+            answer: 0,
+            explanation: "Pembasmian kuman membantu membunuh atau menyahaktifkan mikroorganisma penyebab penyakit dan merupakan salah satu langkah penting dalam rawatan air."
+          }
+        ];
+
+        // Data Soalan Bahasa Melayu
+        const bahasaMelayu = [
+          {
+            q: "Pilih ayat yang paling gramatis.",
+            options: [
+              "Semua peserta-peserta diminta berkumpul di dewan.",
+              "Para guru-guru sedang bermesyuarat.",
+              "Semua peserta diminta berkumpul di dewan.",
+              "Setiap murid-murid perlu membawa buku."
+            ],
+            answer: 2,
+            explanation: "Ayat C gramatis. Perkataan 'semua' sudah menunjukkan jamak, jadi kata nama tidak perlu digandakan."
+          },
+          {
+            q: "Pilih penjodoh bilangan yang betul: Se___ kertas itu diletakkan di atas meja.",
+            options: ["batang", "helai", "utas", "kepingan"],
+            answer: 1,
+            explanation: "'Helai' ialah penjodoh bilangan yang sesuai bagi sehelai kertas."
+          },
+          {
+            q: "Pilih ayat yang menggunakan kata hubung dengan betul.",
+            options: [
+              "Walaupun hujan lebat, pertandingan itu diteruskan.",
+              "Walaupun hujan lebat, tetapi pertandingan itu diteruskan.",
+              "Kerana dia rajin, tetapi dia mendapat pujian.",
+              "Jika kamu belajar, kerana kamu akan berjaya."
+            ],
+            answer: 0,
+            explanation: "Ayat A menggunakan 'walaupun' dengan betul tanpa menambah kata hubung pertentangan 'tetapi' yang berlebihan."
+          },
+          {
+            q: "Pilih ayat pasif yang betul bagi ayat 'Puan Aina menyusun buku-buku itu.'",
+            options: [
+              "Puan Aina disusun oleh buku-buku itu.",
+              "Buku-buku itu menyusun Puan Aina.",
+              "Buku-buku itu disusun oleh Puan Aina.",
+              "Disusun Puan Aina buku-buku itu oleh."
+            ],
+            answer: 2,
+            explanation: "Dalam ayat pasif ini, objek 'buku-buku itu' menjadi subjek dan perbuatan dinyatakan sebagai 'disusun oleh Puan Aina'."
+          },
+          {
+            q: "Pilih imbuhan yang paling tepat: Pekerja itu sedang ___ longkang yang tersumbat.",
+            options: ["membersihkan", "dibersihkan", "pembersihan", "bersih-bersih"],
+            answer: 0,
+            explanation: "'Membersihkan' ialah kata kerja aktif yang sesuai dengan subjek pekerja yang melakukan tindakan."
+          },
+          {
+            q: "Apakah maksud simpulan bahasa 'buah tangan' dalam ayat 'Amin membawa buah tangan untuk neneknya selepas pulang dari Melaka'?",
+            options: [
+              "Buah yang dipetik daripada pokok",
+              "Hadiah atau cenderamata yang dibawa untuk seseorang",
+              "Tangan yang terkena buah",
+              "Makanan yang dimasak oleh nenek"
+            ],
+            answer: 1,
+            explanation: "'Buah tangan' bermaksud hadiah atau cenderamata yang dibawa untuk seseorang."
+          },
+          {
+            q: "Pilih perkataan yang paling hampir maksudnya dengan 'teliti'.",
+            options: ["Cermat", "Cuai", "Bingung", "Terburu-buru"],
+            answer: 0,
+            explanation: "'Cermat' mempunyai maksud yang hampir dengan 'teliti', iaitu melakukan sesuatu dengan berhati-hati."
+          },
+          {
+            q: "Pilih perkataan yang berlawanan maksud dengan 'kukuh'.",
+            options: ["Tegap", "Kuat", "Rapuh", "Teguh"],
+            answer: 2,
+            explanation: "'Rapuh' berlawanan maksud dengan 'kukuh'."
+          },
+          {
+            q: "Pilih kata sendi nama yang betul: Keluarga itu berpindah ___ Johor pada bulan lalu.",
+            options: ["di", "ke", "daripada", "kepada"],
+            answer: 1,
+            explanation: "'Ke' digunakan untuk menunjukkan arah atau destinasi pergerakan."
+          },
+          {
+            q: "Pilih kata pemeri yang tepat: Hadiah itu ___ untuk pemenang pertama.",
+            options: ["ialah", "adalah", "merupakanlah", "akanlah"],
+            answer: 1,
+            explanation: "Kata pemeri 'adalah' boleh digunakan sebelum frasa sendi nama 'untuk pemenang pertama'."
+          },
+          {
+            q: "Pilih ayat dialog yang menggunakan tanda baca dengan betul.",
+            options: [
+              "\"Jangan bising\", kata pengawas itu.",
+              "\"Jangan bising.\" kata pengawas itu.",
+              "\"Jangan bising,\" kata pengawas itu.",
+              "Jangan bising,\" kata pengawas itu."
+            ],
+            answer: 2,
+            explanation: "Tanda koma diletakkan sebelum tanda petik penutup apabila ayat dialog diikuti kata pengiring."
+          },
+          {
+            q: "Perkataan 'gunung-ganang' paling tepat merujuk kepada...",
+            options: [
+              "Banyak gunung atau kawasan pergunungan",
+              "Sekumpulan burung yang terbang",
+              "Banyak alat pertukangan",
+              "Kumpulan manusia yang berlari"
+            ],
+            answer: 0,
+            explanation: "'Gunung-ganang' ialah kata ganda berentak yang merujuk kepada banyak gunung atau kawasan pergunungan."
+          },
+          {
+            q: "Penanda wacana manakah paling sesuai untuk menunjukkan pertentangan idea?",
+            options: ["Selain itu", "Seterusnya", "Walau bagaimanapun", "Oleh sebab itu"],
+            answer: 2,
+            explanation: "'Walau bagaimanapun' digunakan untuk menunjukkan pertentangan atau pengecualian terhadap idea sebelumnya."
+          },
+          {
+            q: "Apakah maksud peribahasa 'Sediakan payung sebelum hujan'?",
+            options: [
+              "Membeli barangan ketika hujan",
+              "Membuat persediaan sebelum sesuatu kesukaran berlaku",
+              "Mengelakkan diri daripada semua tanggungjawab",
+              "Menunggu orang lain menyelesaikan masalah"
+            ],
+            answer: 1,
+            explanation: "Peribahasa ini bermaksud membuat persediaan awal supaya dapat menghadapi kesukaran yang mungkin berlaku."
+          },
+          {
+            q: "Dalam ayat 'Air kolam itu sangat jernih', perkataan manakah ialah kata adjektif?",
+            options: ["Air", "Kolam", "Itu", "Jernih"],
+            answer: 3,
+            explanation: "'Jernih' ialah kata adjektif yang menerangkan keadaan air."
+          },
+          {
+            q: "Dalam ayat 'Anak kucing itu tidur di bawah kerusi', pilih predikat yang betul.",
+            options: [
+              "Anak kucing itu",
+              "Anak kucing",
+              "Tidur di bawah kerusi",
+              "Di bawah"
+            ],
+            answer: 2,
+            explanation: "'Anak kucing itu' ialah subjek, manakala 'tidur di bawah kerusi' ialah predikat yang menyatakan perkara tentang subjek."
+          },
+          {
+            q: "Pilih kata kerja dalam ayat 'Para peserta berlari menuju garisan penamat.'",
+            options: ["Para", "Peserta", "Berlari", "Penamat"],
+            answer: 2,
+            explanation: "'Berlari' ialah kata kerja yang menunjukkan perbuatan."
+          },
+          {
+            q: "Lengkapkan ayat: Saya tidak tahu ___ dia tidak hadir semalam.",
+            options: ["bahawa", "mengapa", "supaya", "walaupun"],
+            answer: 1,
+            explanation: "'Mengapa' digunakan untuk bertanya atau menyatakan sebab sesuatu berlaku."
+          },
+          {
+            q: "Pilih ayat yang tidak mempunyai penggandaan kata nama yang berlebihan.",
+            options: [
+              "Semua murid-murid diminta beratur.",
+              "Setiap murid-murid perlu membawa alat tulis.",
+              "Semua murid diminta beratur.",
+              "Para murid-murid sudah tiba."
+            ],
+            answer: 2,
+            explanation: "Ayat C betul kerana perkataan 'semua' sudah menunjukkan jamak dan tidak memerlukan penggandaan kata nama."
+          },
+          {
+            q: "Pilih ayat yang menggunakan 'masing-masing' dengan tepat.",
+            options: [
+              "Murid-murid duduk di tempat masing-masing.",
+              "Murid-murid masing-masingnya duduk di tempat.",
+              "Masing-masing murid-murid duduk tempat-tempat.",
+              "Tempat masing-masingnya murid duduk."
+            ],
+            answer: 0,
+            explanation: "Ayat A menggunakan 'masing-masing' dengan jelas untuk merujuk kepada tempat setiap murid."
+          },
+          {
+            q: "Pilih ayat yang paling tepat menggunakan perkataan 'ramai'.",
+            options: [
+              "Ramai penonton menyaksikan persembahan itu.",
+              "Ramai air diperlukan untuk mengisi tangki.",
+              "Ramai buku disusun di rak.",
+              "Ramai pasir dibawa ke tapak pembinaan."
+            ],
+            answer: 0,
+            explanation: "'Ramai' lazimnya digunakan untuk merujuk kepada bilangan orang, seperti penonton."
+          },
+          {
+            q: "Pilih kata sendi nama yang paling tepat: Hadiah ini diberikan ___ ibu saya sebagai tanda penghargaan.",
+            options: ["di", "ke", "daripada", "kepada"],
+            answer: 3,
+            explanation: "Kata sendi nama 'kepada' digunakan untuk menunjukkan penerima sesuatu pemberian. Dalam ayat ini, ibu ialah penerima hadiah."
+          },
+          {
+            q: "Apakah maksud peribahasa 'Air dicencang tiada putus'?",
+            options: [
+              "Air yang dipotong menjadi dua",
+              "Hubungan kekeluargaan tidak mudah terputus",
+              "Perselisihan mesti berpanjangan",
+              "Segala kerja mesti dilakukan dengan air"
+            ],
+            answer: 1,
+            explanation: "Peribahasa ini menggambarkan hubungan kekeluargaan yang tidak mudah terputus walaupun berlaku perselisihan."
+          },
+          {
+            q: "Pilih ayat yang paling gramatis.",
+            options: [
+              "Pemandangan itu sangat indah sekali.",
+              "Para guru-guru hadir ke majlis itu.",
+              "Kesemua peserta telah hadir.",
+              "Dia ialah paling terpantas dalam kelas."
+            ],
+            answer: 2,
+            explanation: "Ayat C gramatis. Pilihan lain mengandungi penggandaan atau penggunaan kata penguat yang berlebihan."
+          },
+          {
+            q: "Pilih ayat yang menggunakan penanda hubungan dengan betul.",
+            options: [
+                "Dia bukan sahaja tekun, malah membantu rakan-rakannya.",
+                "Dia bukan sahaja tekun tetapi kerana rajin.",
+                "Dia bukan sahaja tekun supaya malah membantu.",
+                "Dia tekun bukan sahaja kerana tetapi membantu."
+            ],
+            answer: 0,
+            explanation: "Struktur 'bukan sahaja ..., malah ...' menghubungkan dua perkara yang berkaitan. Dalam ayat ini, kedua-dua perbuatan dinyatakan dengan gramatis."
+          },
+          {
+            q: "Baca petikan berikut. 'Setiap petang, Rafi menyimpan sisa makanan dalam bekas kompos. Selepas beberapa minggu, sisa itu menjadi bahan gelap yang digunakan untuk menyuburkan tanah kebun. Rafi juga mengajak jiran mengasingkan botol plastik supaya dapat dikitar semula.' Apakah idea utama petikan ini?",
+            options: [
+              "Rafi tidak suka berkebun",
+              "Rafi mengamalkan pengurusan sisa yang membantu alam sekitar",
+              "Botol plastik lebih baik dibuang ke sungai",
+              "Semua sisa makanan mesti dibakar"
+            ],
+            answer: 1,
+            explanation: "Petikan menekankan tindakan Rafi mengompos sisa makanan dan mengasingkan plastik untuk kitar semula."
+          },
+          {
+            q: "Berdasarkan petikan tentang Rafi, mengapakah sisa makanan dibiarkan dalam bekas kompos selama beberapa minggu?",
+            options: [
+              "Supaya sisa itu menjadi bahan yang boleh menyuburkan tanah",
+              "Supaya sisa itu bertukar menjadi plastik",
+              "Supaya semua air di dalamnya hilang dengan serta-merta",
+              "Supaya sisa itu tidak dapat digunakan lagi"
+            ],
+            answer: 0,
+            explanation: "Sisa organik mereput dan boleh menjadi kompos yang menambah bahan organik kepada tanah."
+          },
+          {
+            q: "Dalam petikan tentang Rafi, frasa 'sisa itu' merujuk kepada...",
+            options: [
+              "tanah kebun",
+              "botol plastik sahaja",
+              "sisa makanan yang disimpan dalam bekas kompos",
+              "alat berkebun milik Rafi"
+            ],
+            answer: 2,
+            explanation: "'Sisa itu' merujuk kepada sisa makanan yang disebut sebelum itu."
+          },
+          {
+            q: "Apakah maksud perkataan 'mengasingkan' dalam petikan tersebut?",
+            options: [
+              "Mencampurkan semua benda",
+              "Memisahkan mengikut jenis atau kumpulan",
+              "Membuang semuanya ke tempat yang sama",
+              "Menghancurkan semua bahan"
+            ],
+            answer: 1,
+            explanation: "'Mengasingkan' bermaksud memisahkan sesuatu mengikut kumpulan atau jenis."
+          },
+          {
+            q: "Dalam petikan tentang Rafi, apakah tujuan botol plastik diasingkan?",
+            options: [
+              "Supaya botol itu boleh dikitar semula",
+              "Supaya botol itu menjadi kompos dengan segera",
+              "Supaya semua botol ditanam di kebun",
+              "Supaya jiran tidak boleh menggunakannya"
+            ],
+            answer: 0,
+            explanation: "Petikan menyatakan bahawa botol plastik diasingkan supaya boleh dikitar semula."
+          }
+        ];
+
+        // 80 Pernyataan Keperibadian (Dipetakan kepada dimensi OCEAN: 0, 1, 2, 3, 4)
+        const personalitiRaw = [
+          { q: "Saya menyusun kerja mengikut keutamaan sebelum mula melakukannya.", dimension: 1 },
+          { q: "Jika arahan kurang jelas, saya meminta penjelasan sebelum meneruskan tugas.", dimension: 0 },
+          { q: "Saya menyemak hasil kerja sekali lagi sebelum menyerahkannya.", dimension: 1 },
+          { q: "Saya boleh mengakui apabila saya belum memahami sesuatu pelajaran.", dimension: 0 },
+          { q: "Saya memecahkan tugasan besar kepada beberapa langkah kecil.", dimension: 1 },
+          { q: "Apabila cara pertama tidak berjaya, saya mencuba pendekatan lain.", dimension: 0 },
+          { q: "Saya mencatat tarikh akhir tugasan supaya tidak terlepas pandang.", dimension: 1 },
+          { q: "Saya mempertimbangkan beberapa penjelasan sebelum membuat kesimpulan.", dimension: 0 },
+          { q: "Saya memberi peluang kepada orang lain menghabiskan percakapan sebelum saya menjawab.", dimension: 3 },
+          { q: "Saya boleh menyusun semula rancangan apabila jadual berubah.", dimension: 4 },
+          { q: "Saya memaklumkan kepada guru apabila menyedari kesilapan dalam tugasan saya.", dimension: 1 },
+          { q: "Saya memulangkan barang pinjaman dalam keadaan baik.", dimension: 3 },
+          { q: "Saya berusaha menepati janji walaupun tiada orang mengingatkan saya.", dimension: 1 },
+          { q: "Saya menjaga kerahsiaan maklumat peribadi yang dipercayakan kepada saya.", dimension: 3 },
+          { q: "Saya meminta izin sebelum menggunakan barang milik orang lain.", dimension: 3 },
+          { q: "Saya memilih untuk bercakap benar apabila ditanya tentang kesilapan yang saya lakukan.", dimension: 1 },
+          { q: "Saya menyimpan catatan penting supaya tugasan dapat disiapkan dengan teratur.", dimension: 1 },
+          { q: "Saya menghormati peraturan walaupun tiada orang sedang memerhatikan saya.", dimension: 1 },
+          { q: "Saya menolak ajakan untuk menyalin jawapan orang lain dalam latihan.", dimension: 1 },
+          { q: "Saya menyatakan penghargaan kepada orang yang menyumbang idea kepada kerja saya.", dimension: 3 },
+          { q: "Saya cuba memahami sebab seseorang mempunyai pandangan yang berbeza.", dimension: 3 },
+          { q: "Saya mempertimbangkan teguran yang membina sebelum memberikan respons.", dimension: 4 },
+          { q: "Saya berusaha mengawal nada suara ketika tidak bersetuju.", dimension: 4 },
+          { q: "Saya bersedia mengubah pendapat apabila bukti baharu menunjukkan bahawa saya tersilap.", dimension: 0 },
+          { q: "Saya menghormati giliran ketika menggunakan kemudahan bersama.", dimension: 3 },
+          { q: "Saya menawarkan bantuan apabila seseorang memerlukannya dan saya mampu membantu.", dimension: 3 },
+          { q: "Saya bertanya dengan sopan apabila tidak bersetuju dengan sesuatu perkara.", dimension: 3 },
+          { q: "Saya boleh menyesuaikan cara bekerja apabila bekerjasama dengan orang yang berbeza.", dimension: 2 },
+          { q: "Saya menyampaikan maklum balas dengan cara yang tidak memalukan orang lain.", dimension: 3 },
+          { q: "Saya cuba menyelesaikan salah faham melalui perbincangan yang tenang.", dimension: 4 },
+          { q: "Saya merancang waktu rehat supaya tugasan penting tidak selalu tertangguh.", dimension: 1 },
+          { q: "Saya memulakan tugasan lebih awal daripada saat akhir apabila keadaan mengizinkan.", dimension: 1 },
+          { q: "Saya menyediakan bahan pembelajaran yang diperlukan sebelum aktiviti bermula.", dimension: 1 },
+          { q: "Saya menggunakan masa lapang untuk menyelesaikan perkara yang masih tertangguh.", dimension: 1 },
+          { q: "Saya menetapkan sasaran yang jelas untuk perkara yang ingin saya pelajari.", dimension: 1 },
+          { q: "Saya menilai cara belajar saya apabila hasilnya tidak seperti yang diharapkan.", dimension: 0 },
+          { q: "Saya cuba mengambil pengajaran daripada kesilapan yang pernah saya lakukan.", dimension: 0 },
+          { q: "Saya berusaha sendiri dahulu sebelum meminta bantuan untuk masalah yang dihadapi.", dimension: 1 },
+          { q: "Saya mengulang kaji mengikut jadual yang mampu saya ikuti secara konsisten.", dimension: 1 },
+          { q: "Saya memberi tumpuan kepada butiran apabila sesuatu tugasan memerlukan ketelitian.", dimension: 1 },
+          { q: "Saya terus berusaha walaupun sesuatu soalan memerlukan masa yang lama untuk difahami.", dimension: 1 },
+          { q: "Saya memberi diri sendiri masa untuk bertenang sebelum membuat keputusan yang penting.", dimension: 4 },
+          { q: "Saya meneruskan usaha apabila kemajuan saya lebih perlahan daripada jangkaan.", dimension: 1 },
+          { q: "Saya mencari maklumat daripada sumber yang munasabah sebelum mempercayainya.", dimension: 0 },
+          { q: "Saya membezakan perkara yang telah dibuktikan daripada perkara yang hanya diandaikan.", dimension: 0 },
+          { q: "Saya memeriksa sama ada sesuatu jawapan masuk akal sebelum menerimanya.", dimension: 0 },
+          { q: "Saya ingin memahami sebab sesuatu perkara berlaku dan bukan sekadar menghafal jawapannya.", dimension: 0 },
+          { q: "Saya mempertimbangkan kemungkinan kesan jangka panjang sebelum memilih tindakan.", dimension: 1 },
+          { q: "Saya membandingkan beberapa pilihan apabila berhadapan dengan keputusan yang sukar.", dimension: 0 },
+          { q: "Saya bersedia mencuba tugasan baharu walaupun saya belum mahir melakukannya.", dimension: 0 },
+          { q: "Saya boleh menyesuaikan diri apabila rutin harian berubah kerana keperluan tertentu.", dimension: 2 },
+          { q: "Saya meminta pandangan orang lain untuk mengetahui cara memperbaiki hasil kerja saya.", dimension: 2 },
+          { q: "Saya memberi perhatian kepada alasan di sebalik pandangan yang berbeza daripada pandangan saya.", dimension: 3 },
+          { q: "Saya berusaha memeriksa butiran kecil yang boleh mempengaruhi hasil sesuatu tugasan.", dimension: 1 },
+          { q: "Saya cuba memahami tugas baharu sebelum mengambil tanggungjawab melaksanakannya.", dimension: 1 },
+          { q: "Saya mencari langkah penyelesaian apabila menghadapi masalah tanpa menunggu arahan untuk setiap perkara.", dimension: 1 },
+          { q: "Saya mengenal pasti masa yang sesuai untuk berhenti seketika apabila fikiran mula tidak teratur.", dimension: 4 },
+          { q: "Saya memilih perkataan yang sopan apabila sedang berasa kecewa.", dimension: 4 },
+          { q: "Saya meletakkan barang peribadi di tempat yang memudahkan saya mencarinya semula.", dimension: 1 },
+          { q: "Saya mengemas ruang belajar selepas selesai menggunakannya.", dimension: 1 },
+          { q: "Saya memberitahu orang yang berkaitan lebih awal apabila menghadapi kesukaran menyiapkan tugas.", dimension: 1 },
+          { q: "Saya membaca arahan keselamatan sebelum menggunakan peralatan yang belum biasa saya gunakan.", dimension: 1 },
+          { q: "Saya menggunakan kemudahan sekolah dengan berhati-hati supaya tidak mudah rosak.", dimension: 3 },
+          { q: "Saya menghargai masa dan usaha orang yang memberikan bantuan kepada saya.", dimension: 3 },
+          { q: "Saya melaksanakan bahagian tugasan yang diberikan kepada saya tanpa perlu kerap diingatkan.", dimension: 1 },
+          { q: "Saya mencadangkan langkah seterusnya apabila kerja yang sedang dilakukan menemui jalan buntu.", dimension: 2 },
+          { q: "Saya menggalakkan orang yang belum bersuara untuk berkongsi pandangan mereka dalam perbincangan.", dimension: 2 },
+          { q: "Saya menghormati keputusan yang dicapai bersama selepas pandangan ahli dipertimbangkan.", dimension: 3 },
+          { q: "Saya bersedia melakukan tugas sokongan yang diperlukan walaupun tugas itu kurang menonjol.", dimension: 3 },
+          { q: "Saya menyampaikan maklumat penting kepada orang yang perlu mengetahuinya.", dimension: 2 },
+          { q: "Saya mempelajari peraturan baharu sebelum menjalankan aktiviti yang tertakluk kepadanya.", dimension: 1 },
+          { q: "Saya memikirkan cara menggunakan bahan dan sumber dengan lebih berhemah.", dimension: 1 },
+          { q: "Saya mengasingkan sisa mengikut kemudahan kitar semula yang disediakan.", dimension: 1 },
+          { q: "Saya menjaga kemudahan awam walaupun saya tidak memilikinya.", dimension: 3 },
+          { q: "Saya mempertimbangkan bagaimana tindakan saya boleh mempengaruhi orang lain.", dimension: 3 },
+          { q: "Saya memikirkan lebih daripada satu cara untuk menyelesaikan masalah harian.", dimension: 0 },
+          { q: "Saya bersedia mempelajari kemahiran yang diperlukan untuk tugasan pada masa hadapan.", dimension: 0 },
+          { q: "Saya menghargai kemajuan kecil yang dicapai melalui usaha yang berterusan.", dimension: 1 },
+          { q: "Saya menyemak sama ada tindakan saya selaras dengan prinsip yang saya percaya.", dimension: 1 },
+          { q: "Saya berusaha memastikan tindakan saya selaras dengan perkara yang saya katakan.", dimension: 1 }
+        ];
+
+        // Format personaliti kepada struktur soalan standard kuiz (Skala Likert 4 mata)
+        const personaliti = personalitiRaw.map((item) => ({
+          q: item.q,
+          options: ["Sangat setuju", "Setuju", "Tidak setuju", "Sangat tidak setuju"],
+          isPersonality: true,
+          dimension: item.dimension,
+          catName: "Keperibadian"
+        }));
+
+        // State Pengurusan Kuiz
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let userAnswers = [];
+        let bookmarked = [];
+        let timerInterval = null;
+        let timeLeft = 1800; // 30 minit default
+        let pendingActionType = null; // untuk modal pengesahan
+
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function startQuiz(type) {
+            if (type === 'matematik') {
+                currentQuestions = shuffleArray(matematik).map(q => ({...q, catName: "Matematik"}));
+                timeLeft = 30 * 60;
+            } else if (type === 'sains') {
+                currentQuestions = shuffleArray(sains).map(q => ({...q, catName: "Sains"}));
+                timeLeft = 35 * 60;
+            } else if (type === 'bm') {
+                currentQuestions = shuffleArray(bahasaMelayu).map(q => ({...q, catName: "Bahasa Melayu"}));
+                timeLeft = 30 * 60;
+            } else if (type === 'personaliti') {
+                currentQuestions = shuffleArray(personaliti).map(q => ({...q, catName: "Keperibadian"}));
+                timeLeft = 30 * 60;
+            } else if (type === 'mymrsm') {
+                currentQuestions = [
+                    ...shuffleArray(matematik).map(q => ({...q, catName: "Matematik"})),
+                    ...shuffleArray(sains).map(q => ({...q, catName: "Sains"})),
+                    ...shuffleArray(bahasaMelayu).map(q => ({...q, catName: "Bahasa Melayu"})),
+                    ...shuffleArray(personaliti).map(q => ({...q, catName: "Keperibadian"}))
+                ];
+                timeLeft = 125 * 60; 
+            } else if (type === 'spskt') {
+                currentQuestions = [
+                    ...shuffleArray(matematik).map(q => ({...q, catName: "Matematik"})),
+                    ...shuffleArray(sains).map(q => ({...q, catName: "Sains"})),
+                    ...shuffleArray(personaliti).map(q => ({...q, catName: "Keperibadian"}))
+                ];
+                timeLeft = 95 * 60; 
+            }
+
+            currentIndex = 0;
+            score = 0;
+            userAnswers = new Array(currentQuestions.length).fill(null);
+            bookmarked = new Array(currentQuestions.length).fill(false);
+
+            document.getElementById('screen-home').classList.add('hidden');
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-quiz').classList.remove('hidden');
+            document.getElementById('stats-header').classList.remove('hidden');
+
+            const hasOnlyPersonality = currentQuestions.every(q => q.isPersonality);
+            if (hasOnlyPersonality) {
+                document.getElementById('score-counter-wrap').style.display = 'none';
+            } else {
+                document.getElementById('score-counter-wrap').style.display = 'block';
+            }
+
+            startTimer();
+            loadQuestion();
+            renderQuestionGrid();
+        }
+
+        function startTimer() {
+            clearInterval(timerInterval);
+            updateTimerDisplay();
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    finishQuiz();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const hours = Math.floor(timeLeft / 3600);
+            const minutes = Math.floor((timeLeft % 3600) / 60);
+            const seconds = timeLeft % 60;
+            
+            if (hours > 0) {
+                document.getElementById('timer-display').innerText = 
+                    `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            } else {
+                document.getElementById('timer-display').innerText = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        function loadQuestion() {
+            const q = currentQuestions[currentIndex];
+            document.getElementById('question-progress-label').innerText = `Soalan ${currentIndex + 1} daripada ${currentQuestions.length}`;
+            document.getElementById('category-badge').innerText = q.catName || 'UKKM';
+            document.getElementById('question-text').innerText = `${currentIndex + 1}. ${q.q}`;
+
+            // Update Bookmark state button
+            const isMarked = bookmarked[currentIndex];
+            const bookmarkIcon = document.getElementById('bookmark-icon');
+            const bookmarkText = document.getElementById('bookmark-text');
+            if (isMarked) {
+                bookmarkIcon.className = "fa-solid fa-bookmark text-amber-500";
+                bookmarkText.innerText = "Ditanda";
+            } else {
+                bookmarkIcon.className = "fa-regular fa-bookmark text-slate-400";
+                bookmarkText.innerText = "Tanda";
+            }
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            const explanationBox = document.getElementById('explanation-box');
+            explanationBox.classList.add('hidden');
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left p-4 rounded-2xl border border-slate-200/80 bg-slate-50/80 hover:bg-slate-100/90 text-slate-800 text-sm sm:text-base transition flex items-center justify-between group shadow-sm cursor-pointer`;
+                btn.innerHTML = `<span><strong class="mr-2.5 text-slate-400 font-semibold">${String.fromCharCode(65 + idx)}.</strong> ${opt}</span>`;
+                
+                if (userAnswers[currentIndex] !== null) {
+                    if (!q.isPersonality) {
+                        btn.disabled = true;
+                        btn.classList.remove('cursor-pointer');
+                        btn.classList.add('cursor-default');
+                        if (idx === q.answer) {
+                            btn.classList.remove('bg-slate-50/80', 'border-slate-200/80');
+                            btn.classList.add('bg-emerald-50', 'border-emerald-300', 'text-emerald-950', 'shadow-sm');
+                        } else if (userAnswers[currentIndex] === idx) {
+                            btn.classList.remove('bg-slate-50/80', 'border-slate-200/80');
+                            btn.classList.add('bg-rose-50', 'border-rose-300', 'text-rose-950', 'shadow-sm');
+                        }
+                    } else {
+                        if (userAnswers[currentIndex] === idx) {
+                            btn.classList.remove('bg-slate-50/80', 'border-slate-200/80');
+                            btn.classList.add('bg-purple-50', 'border-purple-300', 'text-purple-950', 'font-semibold', 'shadow-sm');
+                        }
+                    }
+                }
+                
+                btn.onclick = () => selectAnswer(idx);
+                optionsContainer.appendChild(btn);
+            });
+
+            if (userAnswers[currentIndex] !== null && !q.isPersonality) {
+                showExplanation();
+            }
+
+            document.getElementById('btn-prev').style.visibility = currentIndex === 0 ? 'hidden' : 'visible';
+            document.getElementById('btn-next').innerText = currentIndex === currentQuestions.length - 1 ? 'Selesai Kuiz' : 'Seterusnya →';
+
+            updateAnsweredCounter();
+            renderQuestionGrid();
+        }
+
+        function selectAnswer(selectedIndex) {
+            const q = currentQuestions[currentIndex];
+            userAnswers[currentIndex] = selectedIndex;
+
+            if (!q.isPersonality) {
+                let calculatedScore = 0;
+                for (let i = 0; i < currentQuestions.length; i++) {
+                    if (!currentQuestions[i].isPersonality && userAnswers[i] === currentQuestions[i].answer) {
+                        calculatedScore++;
+                    }
+                }
+                score = calculatedScore;
+                document.getElementById('header-score').innerText = score;
+
+                const buttons = document.getElementById('options-container').children;
+                for (let i = 0; i < buttons.length; i++) {
+                    buttons[i].disabled = true;
+                    buttons[i].classList.remove('cursor-pointer');
+                    buttons[i].classList.add('cursor-default');
+                    if (i === q.answer) {
+                        buttons[i].classList.remove('bg-slate-50/80', 'border-slate-200/80');
+                        buttons[i].classList.add('bg-emerald-50', 'border-emerald-300', 'text-emerald-950', 'shadow-sm');
+                    } else if (i === selectedIndex) {
+                        buttons[i].classList.remove('bg-slate-50/80', 'border-slate-200/80');
+                        buttons[i].classList.add('bg-rose-50', 'border-rose-300', 'text-rose-950', 'shadow-sm');
+                    }
+                }
+                showExplanation();
+            } else {
+                const buttons = document.getElementById('options-container').children;
+                for (let i = 0; i < buttons.length; i++) {
+                    buttons[i].classList.remove('bg-purple-50', 'border-purple-300', 'text-purple-950', 'font-semibold', 'shadow-sm');
+                    buttons[i].classList.add('bg-slate-50/80', 'border-slate-200/80', 'text-slate-800');
+                }
+                buttons[selectedIndex].classList.remove('bg-slate-50/80', 'border-slate-200/80', 'text-slate-800');
+                buttons[selectedIndex].classList.add('bg-purple-50', 'border-purple-300', 'text-purple-950', 'font-semibold', 'shadow-sm');
+            }
+
+            updateAnsweredCounter();
+            renderQuestionGrid();
+        }
+
+        function showExplanation() {
+            const q = currentQuestions[currentIndex];
+            if (!q.isPersonality) {
+                document.getElementById('explanation-title').innerHTML = `<i class="fa-solid fa-circle-info text-blue-600"></i> Huraian Fakta:`;
+                document.getElementById('explanation-text').innerText = q.explanation;
+                document.getElementById('explanation-box').classList.remove('hidden');
+            }
+        }
+
+        function nextQuestion() {
+            if (currentIndex < currentQuestions.length - 1) {
+                currentIndex++;
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                loadQuestion();
+            }
+        }
+
+        function toggleBookmark() {
+            bookmarked[currentIndex] = !bookmarked[currentIndex];
+            loadQuestion();
+        }
+
+        function updateAnsweredCounter() {
+            let answeredCount = userAnswers.filter(ans => ans !== null).length;
+            document.getElementById('nav-answered-counter').innerText = `${answeredCount} / ${currentQuestions.length} Dijawab`;
+        }
+
+        function renderQuestionGrid() {
+            const gridContainer = document.getElementById('question-grid');
+            gridContainer.innerHTML = '';
+
+            for (let i = 0; i < currentQuestions.length; i++) {
+                const btn = document.createElement('button');
+                let isAnswered = userAnswers[i] !== null;
+                let isMarked = bookmarked[i];
+                let isCurrent = i === currentIndex;
+
+                let baseClass = "h-9 rounded-xl font-bold text-xs transition flex items-center justify-center border shadow-xs relative cursor-pointer ";
+                
+                if (isCurrent) {
+                    baseClass += "ring-2 ring-blue-600 ring-offset-1 ";
+                }
+
+                if (isMarked) {
+                    baseClass += "bg-amber-100 text-amber-800 border-amber-300 hover:bg-amber-200";
+                } else if (isAnswered) {
+                    baseClass += "bg-emerald-100 text-emerald-800 border-emerald-300 hover:bg-emerald-200";
+                } else {
+                    baseClass += "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100";
+                }
+
+                btn.className = baseClass;
+                btn.innerText = i + 1;
+                btn.onclick = () => {
+                    currentIndex = i;
+                    loadQuestion();
+                };
+                gridContainer.appendChild(btn);
+            }
+        }
+
+        function confirmChangeCategory() {
+            pendingActionType = 'home';
+            document.getElementById('modal-title').innerText = "Kembali ke Pemilihan Kategori?";
+            document.getElementById('modal-desc').innerText = "Kuiz semasa anda akan ditamatkan dan kemajuan akan diset semula.";
+            document.getElementById('modal-btn-confirm').innerText = "Ya, Keluar";
+            document.getElementById('confirm-modal').classList.remove('hidden');
+        }
+
+        function confirmSubmitQuiz() {
+            pendingActionType = 'submit';
+            document.getElementById('modal-title').innerText = "Hantar Jawapan Ujian?";
+            document.getElementById('modal-desc').innerText = "Adakah anda pasti untuk menamatkan kuiz ini dan melihat keputusan?";
+            document.getElementById('modal-btn-confirm').innerText = "Ya, Hantar";
+            document.getElementById('confirm-modal').classList.remove('hidden');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+        }
+
+        function executeConfirmAction() {
+            closeConfirmModal();
+            if (pendingActionType === 'home') {
+                resetApp();
+            } else if (pendingActionType === 'submit') {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            clearInterval(timerInterval);
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('stats-header').classList.add('hidden');
+            document.getElementById('screen-result').classList.remove('hidden');
+
+            const hasPersonality = currentQuestions.some(q => q.isPersonality);
+            const hasAcademic = currentQuestions.some(q => !q.isPersonality);
+
+            let statsGridHtml = '';
+            let bigFiveHtml = '';
+
+            if (hasAcademic) {
+                const academicQuestions = currentQuestions.filter(q => !q.isPersonality);
+                const totalAcademic = academicQuestions.length;
+                let correctCount = 0;
+                
+                currentQuestions.forEach((q, idx) => {
+                    if (!q.isPersonality && userAnswers[idx] === q.answer) {
+                        correctCount++;
+                    }
+                });
+
+                const incorrect = totalAcademic - correctCount;
+                const percentage = totalAcademic > 0 ? Math.round((correctCount / totalAcademic) * 100) : 0;
+
+                statsGridHtml += `
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <div class="text-xs font-medium text-slate-500 mb-1">Markah</div>
+                        <div class="text-2xl font-extrabold text-blue-600">${correctCount}/${totalAcademic}</div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <div class="text-xs font-medium text-slate-500 mb-1">Peratusan</div>
+                        <div class="text-2xl font-extrabold text-emerald-600">${percentage}%</div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <div class="text-xs font-medium text-slate-500 mb-1">Betul</div>
+                        <div class="text-2xl font-extrabold text-green-600">${correctCount}</div>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+                        <div class="text-xs font-medium text-slate-500 mb-1">Salah</div>
+                        <div class="text-2xl font-extrabold text-rose-600">${incorrect}</div>
+                    </div>
+                `;
+                document.getElementById('result-stats-grid').innerHTML = statsGridHtml;
+                document.getElementById('result-stats-grid').style.display = 'grid';
+            } else {
+                document.getElementById('result-stats-grid').style.display = 'none';
+            }
+
+            if (hasPersonality) {
+                let scores = [0, 0, 0, 0, 0];
+                let counts = [0, 0, 0, 0, 0];
+
+                currentQuestions.forEach((q, idx) => {
+                    if (q.isPersonality && userAnswers[idx] !== null) {
+                        let dim = q.dimension;
+                        let val = 4 - userAnswers[idx];
+                        scores[dim] += val;
+                        counts[dim]++;
+                    }
+                });
+
+                let oceanNames = [
+                    { name: "Openness (Keterbukaan Minda & Kreativiti)", desc: "Mengukur tahap rasa ingin tahu, imaginasi, dan keterbukaan kepada idea baharu." },
+                    { name: "Conscientiousness (Kesedaran & Disiplin Diri)", desc: "Mengukur tahap keteraturan, ketekunan, tanggungjawab, dan pengurusan masa." },
+                    { name: "Extraversion (Ekstroversi & Tenaga Sosial)", desc: "Mengukur tahap tenaga, keyakinan bersosial, dan keterujaan berinteraksi." },
+                    { name: "Agreeableness (Kesepakatan & Empati)", desc: "Mengukur tahap kerjasama, kebaikan hati, dan kepedulian terhadap orang lain." },
+                    { name: "Neuroticism (Kestabilan Emosi & Ketahanan Stres)", desc: "Mengukur kerentanan terhadap tekanan emosi dan kebimbangan." }
+                ];
+
+                bigFiveHtml += `<div class="border-t border-slate-200/80 pt-6 mt-6">
+                    <h3 class="text-lg font-bold text-slate-900 mb-1">Analisis Profil Keperibadian (Big Five)</h3>
+                    <p class="text-xs text-slate-500 mb-4 leading-relaxed">Pecahan skor profil sahsiah anda berdasarkan dimensi psikologi.</p>
+                    <div class="space-y-4">`;
+
+                for (let i = 0; i < 5; i++) {
+                    let avg = counts[i] > 0 ? (scores[i] / (counts[i] * 4)) * 100 : 0;
+                    let roundedAvg = Math.round(avg);
+                    
+                    bigFiveHtml += `
+                        <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 shadow-sm">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-sm font-bold text-slate-800">${oceanNames[i].name}</span>
+                                <span class="text-sm font-bold text-purple-600">${roundedAvg}%</span>
+                            </div>
+                            <p class="text-xs text-slate-500 mb-2.5 leading-relaxed">${oceanNames[i].desc}</p>
+                            <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                                <div class="bg-purple-600 h-2.5 rounded-full transition-all duration-500" style="width: ${roundedAvg}%"></div>
+                            </div>
+                        </div>
+                    `;
+                }
+                bigFiveHtml += `</div></div>`;
+
+                document.getElementById('big-five-results-container').innerHTML = bigFiveHtml;
+                document.getElementById('big-five-results-container').classList.remove('hidden');
+            } else {
+                document.getElementById('big-five-results-container').classList.add('hidden');
+            }
+
+            if (hasAcademic && !hasPersonality) {
+                document.getElementById('result-title').innerText = 'Keputusan Simulasi Akademik UKKM';
+                document.getElementById('result-subtitle').innerText = 'Tahniah kerana telah melengkapkan modul latihan akademik!';
+            } else if (!hasAcademic && hasPersonality) {
+                document.getElementById('result-title').innerText = 'Sesi Modul Keperibadian Selesai';
+                document.getElementById('result-subtitle').innerText = 'Ujian keperibadian ini tidak mempunyai markah, dan tiada jawapan yang betul atau salah. Ujian ini bertujuan untuk membantu mengenal pasti kecenderungan diri, cara berfikir, gaya berinteraksi dengan orang lain serta cara seseorang mengurus emosi dan tanggungjawab.';
+            } else {
+                document.getElementById('result-title').innerText = 'Keputusan Simulasi Penuh Pakej UKKM';
+                document.getElementById('result-subtitle').innerText = 'Tahniah! Anda telah berjaya melengkapkan modul akademik dan keperibadian. Ujian keperibadian ini tidak mempunyai markah, dan tiada jawapan yang betul atau salah. Ujian ini bertujuan untuk membantu mengenal pasti kecenderungan diri, cara berfikir, gaya berinteraksi dengan orang lain serta cara seseorang mengurus emosi dan tanggungjawab.'; 
+            }
+        }
+
+        function resetApp() {
+            clearInterval(timerInterval);
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-home').classList.remove('hidden');
+            document.getElementById('stats-header').classList.add('hidden');
+            document.getElementById('big-five-results-container').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
